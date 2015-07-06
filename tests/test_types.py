@@ -5,9 +5,9 @@ import uuid
 import pytest
 
 from schematics.types import (
-    BaseType, StringType, DateTimeType, DateType, IntType, EmailType, LongType,
-    URLType, MultilingualStringType, UUIDType, IPv4Type, MD5Type, BooleanType,
-    GeoPointType, FloatType, DecimalType, force_unicode
+    BaseType, StringType, DateTimeType, DateType, NumberType, IntType,
+    EmailType, LongType, URLType, MultilingualStringType, UUIDType, IPv4Type,
+    MD5Type, BooleanType, GeoPointType, FloatType, DecimalType, force_unicode
 )
 from schematics.types.base import get_range_endpoints
 from schematics.exceptions import (
@@ -73,9 +73,23 @@ def test_datetime_accepts_datetime():
 
 
 def test_int():
-    with pytest.raises(ConversionError):
-        IntType()('a')
     assert IntType()(1) == 1
+
+    with pytest.raises(ConversionError) as exception:
+        IntType()('a')
+    assert "'a' is not int" in str(exception.value)
+
+
+def test_int_range_validation_messages():
+    field = IntType(min_value=0, max_value=10)
+
+    with pytest.raises(ValidationError) as exception:
+        field.validate(-1)
+    assert 'at least 0' in str(exception.value)
+
+    with pytest.raises(ValidationError) as exception:
+        field.validate(11)
+    assert 'at most 10' in str(exception.value)
 
 
 def test_custom_validation_functions():

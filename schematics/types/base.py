@@ -489,6 +489,11 @@ class IntType(NumberType):
     """A field that validates input as an Integer
     """
 
+    MESSAGES = {
+        'number_min': u"{0} value should be at least {1}",
+        'number_max': u"{0} value should be at most {1}",
+    }
+
     def __init__(self, *args, **kwargs):
         super(IntType, self).__init__(number_class=int,
                                       number_type='Int',
